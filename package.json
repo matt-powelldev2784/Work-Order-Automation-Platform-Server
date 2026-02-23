@@ -6,6 +6,7 @@
   "scripts": {
     "******************************************************A": "echo DEV ENV SCRIPTS",
     "dev": "dotenv -e .env.test -- tsx watch src/index.ts",
+    "dev:prod": "dotenv -e .env.prod -- tsx watch src/index.ts",
     "worker:dev": "dotenv -e .env.test -- tsx watch src/worker.ts",
     "******************************************************B": "echo PRODUCTION ENV SCRIPTS",
     "start": "node dist/index.js",
