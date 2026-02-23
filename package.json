@@ -17,7 +17,10 @@
     "prisma:studio": "prisma studio",
     "prisma:migrate:dev": "dotenv -e .env.test -- prisma migrate dev",
     "prisma:deploy:test": "dotenv -e .env.test -- prisma migrate deploy",
-    "prisma:deploy:prod": "dotenv -e .env.prod -- prisma migrate deploy"
+    "prisma:deploy:prod": "dotenv -e .env.prod -- prisma migrate deploy",
+    "******************************************************D": "echo PRETTIER SCRIPTS",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
@@ -36,6 +39,7 @@
   "devDependencies": {
     "@types/node": "^25.3.0",
     "dotenv-cli": "^11.0.0",
+    "prettier": "^3.8.1",
     "prisma": "^7.4.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
