@@ -14,7 +14,7 @@ app.get('/test', async () => ({ server_status: 'ok' }))
 
 app.route({
   method: 'POST',
-  url: '/jobs',
+  url: '/job',
   preHandler: TODO_AUTH_CHECK,
   handler: postJob,
 })

@@ -8,7 +8,7 @@ const createJobSchema = z.object({
   jobAddress: z.string().trim().min(1),
   jobType: z.string().trim().min(1),
   description: z.string().trim().min(1),
-  createdByUserId: z.string().trim().min(1).optional(),
+  createdByUserId: z.uuid().optional(),
 })
 
 type CreateJobInput = z.infer<typeof createJobSchema>
@@ -19,7 +19,9 @@ export const postJob = async (request: CreateJobRequest, reply: FastifyReply) =>
   const parsedBody = createJobSchema.safeParse(request.body)
 
   if (!parsedBody.success) {
-    return reply.code(400).send(errorResponse('VALIDATION_ERROR'))
+    return reply
+      .code(400)
+      .send(errorResponse({ error: 'VALIDATION_ERROR', errorData: parsedBody.error.issues }))
   }
 
   try {
@@ -31,7 +33,7 @@ export const postJob = async (request: CreateJobRequest, reply: FastifyReply) =>
         jobAddress: body.jobAddress,
         jobType: body.jobType,
         description: body.description,
-        createdByUserId: body.createdByUserId ?? null,
+        //TODO - add created by user id once auth is wired in
       },
     })
 
@@ -39,6 +41,6 @@ export const postJob = async (request: CreateJobRequest, reply: FastifyReply) =>
   } catch (error) {
     request.log.error(error)
 
-    return reply.code(500).send(errorResponse('INTERNAL_SERVER_ERROR'))
+    return reply.code(500).send(errorResponse({ error: 'INTERNAL_SERVER_ERROR', errorData: null }))
   }
 }
