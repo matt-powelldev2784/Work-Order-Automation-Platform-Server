@@ -11,7 +11,7 @@
     "******************************************************B": "echo PRODUCTION ENV SCRIPTS",
     "start": "node dist/index.js",
     "worker:start": "node dist/worker.js",
-    "build": "tsc -p tsconfig.json",
+    "build": "prisma generate && tsc -p tsconfig.json",
     "******************************************************C": "echo PRISMA SCRIPTS",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",

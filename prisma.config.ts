@@ -2,13 +2,12 @@
 // npm install --save-dev prisma dotenv
 import 'dotenv/config'
 import { defineConfig } from 'prisma/config'
+import process from 'node:process'
 
 const databaseUrl = process.env['DATABASE_URL']
 
 if (!databaseUrl) {
-  throw new Error(
-    'DATABASE_URL environment variable is required in prisma.config.ts',
-  )
+  throw new Error('DATABASE_URL environment variable is required in prisma.config.ts')
 }
 
 export default defineConfig({
