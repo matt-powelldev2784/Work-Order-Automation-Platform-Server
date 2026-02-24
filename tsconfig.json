@@ -41,6 +41,8 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
 
-    "moduleResolution": "nodenext",
-  }
+    "moduleResolution": "nodenext"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
 }
