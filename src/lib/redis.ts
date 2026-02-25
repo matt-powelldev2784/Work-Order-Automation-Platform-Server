@@ -18,7 +18,7 @@ export const jobRetryOptions: JobsOptions = {
   removeOnFail: 500,
 }
 
-export const jobQueueName = 'job-sheet-generation'
+export const jobSheetQueue = 'job-sheet-generation'
 
 export type JobQueuePayload = {
   jobId: string
@@ -26,6 +26,6 @@ export type JobQueuePayload = {
 
 const connection = new Redis(redisUrl)
 
-export const jobQueue = new Queue<JobQueuePayload>(jobQueueName, {
+export const jobQueue = new Queue<JobQueuePayload>(jobSheetQueue, {
   connection: connection,
 })

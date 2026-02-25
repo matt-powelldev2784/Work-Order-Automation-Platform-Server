@@ -1,55 +1,46 @@
 import 'dotenv/config'
-import { Worker } from 'bullmq'
+import { Job, Worker } from 'bullmq'
 import { Redis } from 'ioredis'
 import { prisma } from './lib/prisma.js'
-import { jobQueueName, type JobQueuePayload } from './lib/redis.js'
-
-console.log('[worker] started')
+import { jobSheetQueue, type JobQueuePayload } from './lib/redis.js'
 
 const redisUrl = process.env.REDIS_URL
 
-if (!redisUrl) {
-  throw new Error('Missing Redis connection settings. Set REDIS_URL.')
-}
+if (!redisUrl) throw new Error('Missing Redis connection settings. Set REDIS_URL.')
+
+if (redisUrl) console.info('staring process job sheet generation worker...')
 
 const workerConnection = new Redis(redisUrl, {
   maxRetriesPerRequest: null,
 })
 
-const worker = new Worker<JobQueuePayload>(
-  jobQueueName,
-  async (job) => {
-    const { jobId } = job.data
+const updateJobStatus = (jobId: string, jobSheetStatus: 'ready' | 'failed') =>
+  prisma.job.update({
+    where: { id: jobId },
+    data: { jobSheetStatus },
+  })
 
-    await prisma.job.update({
-      where: { id: jobId },
-      data: { jobSheetStatus: 'processing' },
-    })
+const processJobSheetGeneration = async (job: Job<JobQueuePayload>) => {
+  const { jobId } = job.data
 
-    try {
-      await prisma.job.update({
-        where: { id: jobId },
-        data: { jobSheetStatus: 'ready' },
-      })
-    } catch (error) {
-      await prisma.job.update({
-        where: { id: jobId },
-        data: { jobSheetStatus: 'failed' },
-      })
-      throw error
-    }
-  },
-  {
-    connection: workerConnection,
-  },
-)
+  try {
+    await updateJobStatus(jobId, 'ready')
+  } catch (error) {
+    await updateJobStatus(jobId, 'failed')
+    throw error
+  }
+}
+
+const worker = new Worker<JobQueuePayload>(jobSheetQueue, processJobSheetGeneration, {
+  connection: workerConnection,
+})
 
 worker.on('completed', (job) => {
-  console.log(`[worker] completed job ${job.id}`)
+  console.info(`worker completed job generation for ${job.id}`)
 })
 
 worker.on('failed', (job, error) => {
-  console.error(`[worker] failed job ${job?.id ?? 'unknown'}`, error)
+  console.error(`[worker] failed job generation for ${job?.id}`, error)
 })
 
 const shutdown = async () => {

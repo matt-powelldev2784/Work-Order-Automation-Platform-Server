@@ -56,7 +56,7 @@ C --> D[Worker starts processing]
 
 D --> E{Excel generation successful?}
 
-E -- YES --> F[Upload file to Supabase Storage]
+E -- YES --> F[Upload excel file to Supabase Storage]
 F --> G[Update database status = ready]
 
 E -- NO --> H[Retry job]

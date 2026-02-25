@@ -1,7 +1,7 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma.js'
-import { jobQueue, jobQueueName, jobRetryOptions } from '../lib/redis.js'
+import { jobQueue, jobSheetQueue, jobRetryOptions } from '../lib/redis.js'
 import { errorResponse, successResponse } from '../utils/http-response.js'
 import type { Job } from '@prisma/client'
 
@@ -50,7 +50,9 @@ export const postJob = async (request: CreateJobRequest, reply: FastifyReply) =>
   try {
     const queuePayload = { jobId: job.id }
 
-    await jobQueue.add(jobQueueName, queuePayload, jobRetryOptions)
+    await jobQueue.add(jobSheetQueue, queuePayload, jobRetryOptions)
+
+    return reply.code(201).send(successResponse(job))
   } catch (queueError) {
     request.log.error(queueError)
 
@@ -61,6 +63,4 @@ export const postJob = async (request: CreateJobRequest, reply: FastifyReply) =>
 
     return reply.code(500).send(errorResponse({ error: 'QUEUE_ENQUEUE_FAILED', errorData: null }))
   }
-
-  return reply.code(201).send(successResponse(job))
 }
