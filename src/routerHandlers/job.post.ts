@@ -48,7 +48,7 @@ export const postJob = async (request: CreateJobRequest, reply: FastifyReply) =>
 
   // add job to job sheet processing queue
   try {
-    const queuePayload = { jobId: job.id }
+    const queuePayload = { jobId: Number(job.id) }
 
     await jobQueue.add(jobSheetQueue, queuePayload, jobRetryOptions)
 
