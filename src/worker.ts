@@ -23,13 +23,13 @@ const workerConnection = new Redis(redisUrl, {
 
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
 
-const updateJobStatus = (jobId: string, jobSheetStatus: 'ready' | 'failed') =>
+const updateJobStatus = (jobId: number, jobSheetStatus: 'ready' | 'failed') =>
   prisma.job.update({
     where: { id: jobId },
     data: { jobSheetStatus },
   })
 
-const generateAndUploadJobSheet = async (jobId: string) => {
+const generateAndUploadJobSheet = async (jobId: number) => {
   const jobRecord = await prisma.job.findUnique({ where: { id: jobId } })
 
   if (!jobRecord) {
@@ -71,7 +71,7 @@ const generateAndUploadJobSheet = async (jobId: string) => {
   return storagePath
 }
 
-const markJobReadyWithFile = async (jobId: string, filePath: string) => {
+const markJobReadyWithFile = async (jobId: number, filePath: string) => {
   try {
     await prisma.job.update({
       where: { id: jobId },
